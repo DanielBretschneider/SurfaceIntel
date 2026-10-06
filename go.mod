@@ -1,3 +1,3 @@
-module surfaceintel
+module SurfaceIntel
 
-go 1.21
+go 1.27.1
