@@ -107,33 +107,37 @@ func Discover(domain string) ([]string, error) {
 		return nil, fmt.Errorf("decode crt.sh response: %w", err)
 	}
 
-	// Use a map to track already-seen domains for deduplication
+	return parseRecords(records, domain), nil
+}
+
+func parseRecords(records []certificateRecord, target string) []string {
+	target = normalizeDomain(target)
+
 	seen := make(map[string]struct{})
 	var domains []string
 
-	// Iterate through each certificate record returned by crt.sh
 	for _, record := range records {
-		// Split potentially multi-value NameValue field (domains separated by newlines)
 		for _, value := range strings.Split(record.NameValue, "\n") {
-			// Normalize the domain and skip empty results
 			domain := normalizeDomain(value)
 
 			if domain == "" {
 				continue
 			}
 
-			// Skip if already processed (deduplication)
+			if !belongsToTarget(domain, target) {
+				continue
+			}
+
 			if _, exists := seen[domain]; exists {
 				continue
 			}
 
-			// Mark as seen and add to results
 			seen[domain] = struct{}{}
 			domains = append(domains, domain)
 		}
 	}
 
-	return domains, nil
+	return domains
 }
 
 // normalizeDomain processes a raw domain string from crt.sh into a standardized format.
@@ -159,4 +163,13 @@ func normalizeDomain(value string) string {
 	value = strings.TrimPrefix(value, "*.")
 
 	return value
+}
+
+// This is necessary so "example.com.evil.com" which contains
+// "example.com" is not counted to "example.com". It's not
+// a valid subdomain. This func checks if that's the case.
+// TODO: better comment
+func belongsToTarget(domain, target string) bool {
+	return domain == target ||
+		strings.HasSuffix(domain, "."+target)
 }

@@ -1,16 +1,9 @@
-// Copyright © 2026 Daniel Bretschneider
-// SPDX-License-Identifier: MIT
-//
-// Author: Daniel Bretschneider <daniel@bretschneider.cc>
-// Purpose: Unit tests for domain normalization functionality.
-// Created: 2026-10-06
-// Last Updated: 2026-10-06
-// Location: internal/crtsh/crtsh_test.go
-//
-// Package crtsh contains unit tests for certificate-based domain discovery functionality.
 package crtsh
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestNormalizeDomain(t *testing.T) {
 	tests := []struct {
@@ -46,5 +39,68 @@ func TestNormalizeDomain(t *testing.T) {
 				tt.expected,
 			)
 		}
+	}
+}
+
+func TestBelongsToTarget(t *testing.T) {
+	tests := []struct {
+		domain string
+		target string
+		want   bool
+	}{
+		{"example.com", "example.com", true},
+		{"www.example.com", "example.com", true},
+		{"api.example.com", "example.com", true},
+		{"dev.api.example.com", "example.com", true},
+
+		{"example.com.evil.com", "example.com", false},
+		{"evil-example.com", "example.com", false},
+		{"example.org", "example.com", false},
+	}
+
+	for _, tt := range tests {
+		result := belongsToTarget(tt.domain, tt.target)
+
+		if result != tt.want {
+			t.Errorf(
+				"belongsToTarget(%q, %q) = %v, want %v",
+				tt.domain,
+				tt.target,
+				result,
+			)
+		}
+	}
+}
+
+func TestParseRecords(t *testing.T) {
+	records := []certificateRecord{
+		{
+			NameValue: "example.com\nwww.example.com\n*.api.example.com",
+		},
+		{
+			NameValue: "example.com\nwww.example.com",
+		},
+		{
+			NameValue: "example.com.evil.com",
+		},
+		{
+			NameValue: "evil-example.com",
+		},
+	}
+
+	expected := []string{
+		"example.com",
+		"www.example.com",
+		"api.example.com",
+	}
+
+	result := parseRecords(records, "example.com")
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf(
+			"parseRecords() = %v, want %v",
+			result,
+			expected,
+		)
 	}
 }
