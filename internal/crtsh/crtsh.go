@@ -29,6 +29,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // certificateRecord represents a single domain name record returned by the crt.sh API.
@@ -62,17 +63,36 @@ func Discover(domain string) ([]string, error) {
 	query := fmt.Sprintf("%%.%s", domain)
 
 	// Build crt.sh API endpoint with query parameters for JSON output
-	endpoint := "https://crt.sh/" + url.Values{
+	endpoint := "https://crt.sh/?" + url.Values{
 		"q":      []string{query},  // Search query for domain pattern
 		"output": []string{"json"}, // Request response in JSON format
 	}.Encode()
 
+	// Create Client to build request for crt.sh (problem with http code 429)
+	client := &http.Client{
+		Timeout: 15 * time.Second,
+	}
+
+	// Start creating request header
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create crt.sh request: %w", err)
+	}
+
+	// Set Request Header for crt.sh
+	req.Header.Set("User-Agent", "SurfaceIntel/0.1.0")
+
 	// Send HTTP GET request to crt.sh API
-	resp, err := http.Get(endpoint)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request crt.sh: %w", err)
 	}
 	defer resp.Body.Close()
+
+	// Check if too many requests status
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, fmt.Errorf("crt.sh rate limit reached (HTTP 429")
+	}
 
 	// Validate HTTP response status code
 	if resp.StatusCode != http.StatusOK {

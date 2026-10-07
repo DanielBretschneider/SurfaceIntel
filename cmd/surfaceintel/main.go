@@ -12,6 +12,7 @@
 package main
 
 import (
+	"SurfaceIntel/internal/crtsh"
 	"fmt"
 	"os"
 )
@@ -31,7 +32,6 @@ const version = "0.1.0"
 //
 // or executing the compiled binary directly.
 func main() {
-	// check usage of file
 	if len(os.Args) < 3 {
 		fmt.Println("Usage: surfaceintel scan <domain>")
 		os.Exit(1)
@@ -46,5 +46,20 @@ func main() {
 	}
 
 	fmt.Printf("SurfaceIntel v%s\n", version)
-	fmt.Printf("Target: %s\n", target)
+	fmt.Printf("Target: %s\n\n", target)
+
+	fmt.Println("[Certificate Transparency]")
+
+	domains, err := crtsh.Discover(target)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	for _, domain := range domains {
+		fmt.Printf("  %s\n", domain)
+	}
+
+	fmt.Printf("\n[Summary]\n")
+	fmt.Printf("  Domains discovered: %d\n", len(domains))
 }
