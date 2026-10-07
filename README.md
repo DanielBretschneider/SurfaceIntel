@@ -37,7 +37,7 @@ Optional Local Intelligence Report
 
 ## MVP
 
-Start deliberately small:
+Starting small so I don't overcomplicate things.
 
 ```bash
 surfaceintel scan example.com
@@ -114,7 +114,7 @@ surfaceintel/
 
 ## Database model
 
-Start with PostgreSQL rather than Neo4j.
+Start with PostgreSQL.
 
 Suggested tables:
 
@@ -131,7 +131,7 @@ assets
 observations
 ```
 
-The important concept is an **observation**. Store what was observed, when it was first seen, when it was last seen, and its source. This enables historical intelligence and change detection.
+The important concept is an **observation**. Goal is to store what was observed, when it was first seen, when it was last seen, and its source. This enables historical intelligence and change detection.
 
 ## Concurrent discovery
 
@@ -150,7 +150,7 @@ A later `Scan()` implementation can run independent collectors concurrently and 
 
 ## Technology detection
 
-After passive discovery, add lightweight HTTP/TLS enrichment:
+After passive discovery, add lightweight HTTP/TLS enrichment - let's see....
 
 - HTTP status and redirects
 - TLS metadata
@@ -159,24 +159,6 @@ After passive discovery, add lightweight HTTP/TLS enrichment:
 - common framework/application indicators
 
 Keep fingerprints explainable and source-backed.
-
-## Exposure Score
-
-Use an explicitly documented **Exposure Score**, not a vulnerability score.
-
-Potential inputs:
-
-```text
-Exposure
-Technology
-Environment
-Age
-Certificate state
-Infrastructure context
-Intelligence indicators
-```
-
-The score should explain why an asset was ranked.
 
 ## Historical intelligence
 
@@ -190,7 +172,7 @@ Track:
 ~ technology changed
 ```
 
-This turns a one-time reconnaissance tool into a continuous external attack-surface intelligence system.
+This turns a one-time reconnaissance tool into a continuous external attack-surface intelligence system ;)
 
 ## Web UI
 
@@ -209,7 +191,7 @@ Suggested pages:
 
 ## Local AI
 
-Later, integrate a local Qwen model through Ollama.
+Later, trying to integrate a local Qwen model through Ollama.
 
 The LLM receives structured observations and produces an intelligence report containing:
 
@@ -228,38 +210,8 @@ INFERRED
 UNKNOWN
 ```
 
-The LLM should never be treated as the source of truth.
-
 ## Responsible use
 
 SurfaceIntel is intended for assets you own or are authorized to assess.
 
-The initial discovery pipeline should be passive-first. Avoid aggressive scanning of third-party infrastructure.
-
-For public demonstrations, use your own domains, a lab environment, deliberately provided targets, or appropriate test domains.
-
-## Portfolio angle
-
-SurfaceIntel demonstrates:
-
-- Cybersecurity
-- OSINT methodology
-- Threat Intelligence
-- Go engineering
-- Concurrent programming
-- Data modeling
-- PostgreSQL
-- Web development
-- Historical analysis
-- Responsible security practices
-- Optional local AI integration
-
-## Suggested LinkedIn positioning
-
-> I built SurfaceIntel, a passive-first OSINT platform in Go for mapping and tracking an organization's external attack surface.
->
-> It correlates DNS, Certificate Transparency, IP/ASN and HTTP observations into a historical asset model and highlights changes over time.
->
-> The goal wasn't to build another port scanner. I wanted to explore how raw OSINT data can be transformed into actionable security intelligence.
->
-> Next steps: technology fingerprinting, change detection, and local LLM-assisted intelligence reporting.
+The initial discovery pipeline should be passive-first. Aggressive scanning of third-party infrastructure should be avoided.
