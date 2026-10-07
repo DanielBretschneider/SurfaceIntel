@@ -1,6 +1,6 @@
 # SurfaceIntel
 
-> Passive-first OSINT-driven external attack surface intelligence in Go.
+> Passive-first OSINT-driven external attack surface intelligence in Go. In progress, currently working on v0.1.
 
 SurfaceIntel is a Go-based OSINT and external attack-surface intelligence platform designed to discover, normalize, enrich, and track an organization's publicly observable infrastructure.
 
