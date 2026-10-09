@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -66,6 +67,10 @@ func main() {
 			ipv6Addresses = append(ipv6Addresses, ip.String())
 		}
 	}
+
+	// sort addresses for consistent output
+	sort.Strings(ipv4Addresses)
+	sort.Strings(ipv6Addresses)
 
 	// Display IPv4 addresses.
 	fmt.Println()
