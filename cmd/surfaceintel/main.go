@@ -55,20 +55,58 @@ func main() {
 	printDNSReport(ips)
 }
 
-// isValidDomain checks whether the supplied string passes our basic
-// domain format checks. It does not verify whether the domain exists.
+/*
+isValidDomain checks whether the supplied string follows basic domain
+name formatting rules. It does not verify whether the domain exists.
+*/
 func isValidDomain(domain string) bool {
+	// A domain must not be empty.
+	if domain == "" {
+		return false
+	}
+
+	// Reject URL schemes, paths, ports, spaces, and other unsupported characters.
+	if strings.ContainsAny(domain, " /:\\") {
+		return false
+	}
+
 	// A domain must contain at least one dot.
 	if !strings.Contains(domain, ".") {
 		return false
 	}
 
-	// Reject spaces, URL schemes, paths, and other unsupported characters.
-	if strings.ContainsAny(domain, " /:\\") {
-		return false
+	// Split the domain into individual labels.
+	labels := strings.Split(domain, ".")
+
+	// Validate every label independently.
+	for _, label := range labels {
+		// Labels must not be empty.
+		if label == "" {
+			return false
+		}
+
+		// Labels must not start or end with a hyphen.
+		if strings.HasPrefix(label, "-") || strings.HasSuffix(label, "-") {
+			return false
+		}
+
+		// Allow only letters, digits, and hyphens in each label.
+		for _, character := range label {
+			if (character < 'a' || character > 'z') &&
+				(character < 'A' || character > 'Z') &&
+				(character < '0' || character > '9') &&
+				character != '-' {
+				return false
+			}
+		}
+
+		// DNS labels may contain at most 63 characters.
+		if len(label) > 63 {
+			return false
+		}
 	}
 
-	// All basic checks passed.
+	// All basic formatting checks passed.
 	return true
 }
 
