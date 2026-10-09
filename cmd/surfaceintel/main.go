@@ -9,11 +9,26 @@ Version:     0.1.0
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 // main is the entry point of the Surfaceintel CLI application.
 // Execution starts here when the program is launched.
 func main() {
 	// Print app name and its purpose to the terminal.
-	fmt.Println("SurfaceIntel - Domain Intelligence")
+	fmt.Println("SurfaceIntel v0.1.0 - Domain Intelligence")
+
+	// check whether the user supplied a domain argument
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: surfaceintel <domain>")
+		return
+	}
+
+	// Read the first argument after the program name
+	domain := os.Args[1]
+
+	// Display the supplied argument
+	fmt.Println("[*] Target domain: ", domain)
 }
