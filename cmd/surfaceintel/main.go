@@ -53,6 +53,16 @@ func main() {
 
 	// Display the DNS results and their summary.
 	printDNSReport(ips)
+
+	// Look up the domain's mail exchange records (MX)
+	mxRecords, err := lookupMXRecords(domain)
+	if err != nil {
+		fmt.Println("[-] MX lookup failed:", err)
+		return
+	}
+
+	// Display the discovered mail exchange records
+	printMXReport(mxRecords)
 }
 
 /*
