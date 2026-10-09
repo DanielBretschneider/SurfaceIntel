@@ -11,6 +11,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"strings"
 )
@@ -38,6 +39,19 @@ func main() {
 
 	// Display the supplied argument
 	fmt.Println("[*] Target domain: ", domain)
+
+	// Look up the IP addresses associate with the domain
+	ips, err := net.LookupIP(domain)
+	if err != nil {
+		fmt.Println("[-] DNS lookup failed: ", err)
+		return
+	}
+
+	// Display the IP addresses return by the lookup
+	fmt.Printf("[*] Found %d IP address(es):\n", len(ips))
+	for _, ip := range ips {
+		fmt.Println("-", ip)
+	}
 }
 
 // isValidDomain checks whether the supplied string looks like a domain
