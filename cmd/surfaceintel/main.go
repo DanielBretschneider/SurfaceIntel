@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// Display the supplied argument
-	fmt.Println("[*] Target domain: ", domain)
+	fmt.Println("\n[*] Target domain: ", domain)
 
 	// Look up the IP addresses associate with the domain
 	ips, err := net.LookupIP(domain)
@@ -47,11 +47,46 @@ func main() {
 		return
 	}
 
+	// define address counter for v4 and v6 addresses
+	ipv4Count := 0
+	ipv6Count := 0
+
+	// Store v4 and v6 address seperately
+	var ipv4Addresses []string
+	var ipv6Addresses []string
+
 	// Display the IP addresses return by the lookup
-	fmt.Printf("[*] Found %d IP address(es):\n", len(ips))
+	fmt.Printf("\n[*] Found %d IP address(es):", len(ips))
 	for _, ip := range ips {
+		if ip.To4() != nil {
+			ipv4Count++
+			ipv4Addresses = append(ipv4Addresses, ip.String())
+		} else {
+			ipv6Count++
+			ipv6Addresses = append(ipv6Addresses, ip.String())
+		}
+	}
+
+	// Display IPv4 addresses.
+	fmt.Println()
+	fmt.Printf("[+] IPv4 Addresses (%d):\n", len(ipv4Addresses))
+	for _, ip := range ipv4Addresses {
 		fmt.Println("-", ip)
 	}
+
+	// Display IPv6 addresses.
+	fmt.Println()
+	fmt.Printf("[+] IPv6 Addresses (%d):\n", len(ipv6Addresses))
+	for _, ip := range ipv6Addresses {
+		fmt.Println("-", ip)
+	}
+
+	// Display a summary of the DNS lookup results.
+	fmt.Println()
+	fmt.Println("[*] DNS Summary")
+	fmt.Println("IPv4 addresses:", ipv4Count)
+	fmt.Println("IPv6 addresses:", ipv6Count)
+	fmt.Println("Total addresses:", len(ips))
 }
 
 // isValidDomain checks whether the supplied string looks like a domain
