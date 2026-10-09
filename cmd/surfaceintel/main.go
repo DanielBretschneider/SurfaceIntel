@@ -10,11 +10,13 @@ Version:     0.1.0
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os"
 	"sort"
 	"strings"
+	"time"
 )
 
 // main is the entry point of the Surfaceintel CLI application.
@@ -41,11 +43,21 @@ func main() {
 	// Display the supplied argument
 	fmt.Println("\n[*] Target domain: ", domain)
 
-	// Look up the IP addresses associate with the domain
-	ips, err := net.LookupIP(domain)
+	// Create a context that limits the DNS lookup to five seconds.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Look up the IP addresses associated with the domain.
+	ipAddresses, err := net.DefaultResolver.LookupIPAddr(ctx, domain)
 	if err != nil {
-		fmt.Println("[-] DNS lookup failed: ", err)
+		fmt.Println("DNS lookup failed:", err)
 		return
+	}
+
+	// Convert the lookup results into the IP slice used below.
+	ips := make([]net.IP, 0, len(ipAddresses))
+	for _, address := range ipAddresses {
+		ips = append(ips, address.IP)
 	}
 
 	// define address counter for v4 and v6 addresses
