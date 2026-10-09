@@ -63,6 +63,15 @@ func main() {
 
 	// Display the discovered mail exchange records
 	printMXReport(mxRecords)
+
+	// Look up the domains name server records (NS)
+	nsRecords, err := lookupNSRecords(domain)
+	if err != nil {
+		fmt.Println("[-] NS lookup failed:", err)
+	}
+
+	// Display the discovered name server records
+	printNSReport(nsRecords)
 }
 
 /*
