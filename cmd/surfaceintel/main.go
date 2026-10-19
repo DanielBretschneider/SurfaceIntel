@@ -72,6 +72,15 @@ func main() {
 
 	// Display the discovered name server records
 	printNSReport(nsRecords)
+
+	// Look up the domains txt records (TXT)
+	txtRecords, err := lookupTXTRecords(domain)
+	if err != nil {
+		fmt.Println("[-] TXT lookup failed:", err)
+	}
+
+	// Display all discovered txt records
+	printTXTReport(txtRecords)
 }
 
 /*
